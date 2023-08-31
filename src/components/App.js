@@ -1,5 +1,5 @@
-import React from 'react';
-import { Note } from './Note';
+import React, {useState} from 'react';
+import {Note} from './Note';
 
 // Реализовать интерфейс заметок
 // По кнопке + заметки должны добавляться
@@ -12,23 +12,42 @@ import { Note } from './Note';
 // Количество заметок должно быть подсчитано в header
 
 export const App = () => {
-  return (
-      <>
-        <div className="header">Notes list, total {'{Total notes must be here}'}</div>
-        <div className="container">
-          {/* button must add notes */}
-          <div className="btn">
-            +
-          </div>
-          <input
-              type="text"
-              value={'123'}
-              className="textInput"
-              autoFocus
-          />
-          {/* render notes here */}
-        </div>
-      </>
-  );
+    const [notes, setNotes] = useState([]);
+    const [input, setInput] = useState('')
+    let nextKeyId = 0;
+    const handleInput = (event) => {
+        setInput(event.target.value)
+    }
+
+    const addNote = () => {
+        setNotes([...notes, input].sort((a, b) => (a < b) ? -1 : (a > b) ? 1 : 0))
+        setInput('');
+    }
+
+    const deleteNote = (index) => {
+        setNotes(notes.filter((el, ind) => ind !== index))
+    }
+    return (
+        <>
+            <div className="header">Notes list, total {notes.length}</div>
+            <div className="container">
+
+                <div className="btn" onClick={addNote}>
+                    +
+                </div>
+                <input
+                    type="text"
+                    onChange={handleInput}
+                    value={input}
+                    className="textInput"
+                    autoFocus
+                />
+                {notes.map((note, index) => {
+                    const key = `note-${nextKeyId++}`;
+                    return <Note onClick={() => deleteNote(index)} key={key} item={note}></Note>
+                })}
+            </div>
+        </>
+    );
 };
 
